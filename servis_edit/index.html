@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Openlayers css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/css/ol.css" type="text/css">
+    <!-- Custom css -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.0.js" integrity="sha256-r/AaFHrszJtwpe+tHyNi/XCfMxYpbsRg2Uqn0x3s2zc=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <!-- Openlayers JS  -->
+        <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js"></script>
+        <style>
+        #tools {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+        }
+        #tools a {
+          display: inline-block;
+          padding: 0.5rem;
+          background: white;
+          cursor: pointer;
+        }
+      </style>
+        
+
+<title>Station App</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Station App</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" onclick="startDrawing()">Add Point</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" onclick="startDrawing_route()">Add Route</a>
+            </li>
+            
+
+            
+           <!-- <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Data type
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" onclick="addLayer('Heatmap')">Heatmap</a>
+                <a class="dropdown-item" onclick="addLayer('Attribute')">Attribute Based</a>
+                <a class="dropdown-item" onclick="addLayer('ClusterColor')">Cluster Coloring</a>
+                <a class="dropdown-item" onclick="addLayer('Cluster')">Cluster</a>
+              </div>
+            </li>
+              <li class="nav-item">
+              <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+            </li> -->
+          </ul>
+          <!-- <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form> -->
+        </div>
+      </nav>
+      <!-- Container -->
+      <div class="container-fluid">
+          <!-- Map -->
+          <div class="map" id="mymap"></div>
+          <div id="msg"></div>
+      </div>
+      <span id="status">&nbsp;</span>
+      <!-- Modal for form after creating point -->
+      <!-- Modal -->
+      <div id="tools">
+        <a id="clear">Clear</a>
+        <a id="download" download="features.json">Download</a>
+        <a onclick="visualize()">Visualize Location</a>
+      </div>
+  <div class="modal fade" id="pointadding" tabindex="-1" role="dialog" aria-labelledby="pointaddingLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pointaddingLabel">New Entry</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+              <div class="form-group">
+                <label for="location">Location Name</label>
+                <input type="text" class="form-control" id="location" aria-describedby="emailHelp" placeholder="Enter Name">
+              </div>
+              <div class="form-group">
+                <label for="recorder">Recorder Name</label>
+                <input type="text" class="form-control" id="recorder" aria-describedby="emailHelp" placeholder="Enter Name">
+              </div>
+              <div class="form-group">
+                <label for="minibus_name">Minibus Name</label>
+                <input type="text" class="form-control" id="minibus_name" aria-describedby="emailHelp" placeholder="Enter Name">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="SaveDatatodb()">Save changes</button>
+              
+              </div>
+            </div>    
+        </div>
+      </div>
+    </div>
+    
+  </div>
+<div class="modal fade" id="route_adding" tabindex="-1" role="dialog" aria-labelledby="routeaddingLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="route_addingLabel">New Entry</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div class="form-group">
+              <label for="location">Location Name</label>
+              <input type="text" class="form-control" id="location_route" aria-describedby="emailHelp" placeholder="Enter Name">
+            </div>
+            <div class="form-group">
+              <label for="recorder">Recorder Name</label>
+              <input type="text" class="form-control" id="recorder_route" aria-describedby="emailHelp" placeholder="Enter Name">
+            </div>
+            <div class="form-group">
+              <label for="minibus_name">Minibus Name</label>
+              <input type="text" class="form-control" id="minibus_name_route" aria-describedby="emailHelp" placeholder="Enter Name">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" onclick="SaveDatatodb_route()">Save changes</button>
+            
+            </div>
+          </div>    
+      </div>
+    </div>
+  </div>
+  
+</div>
+<div class="modal fade" id="json_adding" tabindex="-1" role="dialog" aria-labelledby="jsonaddingLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="json_addingLabel">New Entry</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div class="form-group">
+              <label for="location">Location Name</label>
+              <input type="text" class="form-control" id="location_json" aria-describedby="emailHelp" placeholder="Enter Name">
+            </div>
+            <div class="form-group">
+              <label for="recorder">Recorder Name</label>
+              <input type="text" class="form-control" id="recorder_json" aria-describedby="emailHelp" placeholder="Enter Name">
+            </div>
+            <div class="form-group">
+              <label for="minibus_name">Minibus Name</label>
+              <input type="text" class="form-control" id="minibus_name_json" aria-describedby="emailHelp" placeholder="Enter Name">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" onclick="SaveDatatodb_json()">Save changes</button>
+            
+            </div>
+          </div>    
+      </div>
+    </div>
+  </div>
+    
+</div>
+<div class="modal fade" id="route_adding" tabindex="-1" role="dialog" aria-labelledby="routeaddingLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="route_addingLabel">New Entry</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div class="form-group">
+              <label for="location">Location Name</label>
+              <input type="text" class="form-control" id="location_route" aria-describedby="emailHelp" placeholder="Enter Name">
+            </div>
+            <div class="form-group">
+              <label for="recorder">Recorder Name</label>
+              <input type="text" class="form-control" id="recorder_route" aria-describedby="emailHelp" placeholder="Enter Name">
+            </div>
+            <div class="form-group">
+              <label for="minibus_name">Minibus Name</label>
+              <input type="text" class="form-control" id="minibus_name_route" aria-describedby="emailHelp" placeholder="Enter Name">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" onclick="SaveDatatodb_route()">Save changes</button>
+            
+            </div>
+          </div>    
+      </div>
+    </div>
+  </div>
+    
+</div>
+  
+
+    <script src="main.js"></script>
+</body>
+</html>
